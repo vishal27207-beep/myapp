@@ -9,7 +9,7 @@ RUN npm ci
 # Copy the rest of the application code and build it
 COPY . .
 # Replace the old RUN npm run build line with this:
-RUN npx ng build --configuration production
+RUN npm ng build --configuration production
 
 # Stage 2: Serve the application using Nginx
 FROM nginx:alpine
