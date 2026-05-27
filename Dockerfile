@@ -2,14 +2,14 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Allocate more memory for the build process
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 COPY package*.json ./
 RUN npm ci
 
-# Copy the rest of the application code and build it
 COPY . .
-
-RUN ./node_modules/.bin/ng build --configuration production
+RUN npm run build --configuration=production
 # Stage 2: Serve the application using Nginx
 FROM nginx:alpine
 # Copy the custom nginx configuration
