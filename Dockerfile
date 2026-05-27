@@ -10,14 +10,13 @@ RUN npm ci
 
 COPY . .
 RUN npm run build --configuration=production
-# Stage 2: Serve the application using Nginx
 FROM nginx:alpine
-# Copy the custom nginx configuration
+
+# Copy your custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy the build output from Stage 1 to Nginx's HTML folder
-# NOTE: Check your local dist folder structure. It might be /app/dist/myapp/browser
-COPY --from=build /app/dist/myapp/browser /usr/share/nginx/html
+# Copy your LOCALLY built files straight into the Nginx directory
+COPY ./dist/myapp/browser /usr/share/nginx/html
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
