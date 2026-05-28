@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class Customerservice {
-  private apiUrl = "http://localhost:8080/customers";
+  private apiUrl = "https://product-j9jq.onrender.com/customers";
   constructor(private http: HttpClient) { }
 
   getAllCustomermodels() {
