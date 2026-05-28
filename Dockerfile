@@ -1,7 +1,7 @@
 # =========================
 # Stage 1 - Build Angular
 # =========================
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ ENV NODE_OPTIONS=--max-old-space-size=4096
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --include=dev
+RUN npm install --include=dev
 
 # Copy all project files
 COPY . .
