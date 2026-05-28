@@ -1,22 +1,40 @@
-# Stage 1: Build the Angular application
-FROM node:20-alpine AS build
+# =========================
+# Stage 1 - Build Angular
+# =========================
+FROM node:22-alpine AS build
+
 WORKDIR /app
 
-# Allocate more memory for the build process
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# Increase memory for Angular build
+ENV NODE_OPTIONS=--max-old-space-size=4096
 
+# Copy package files
 COPY package*.json ./
-RUN npm ci
 
+# Install dependencies
+RUN npm install
+
+# Copy all project files
 COPY . .
+
+# Build Angular app
 RUN npm run build --configuration=production
+
+# =========================
+# Stage 2 - Nginx Server
+# =========================
 FROM nginx:alpine
 
-# Copy your custom nginx configuration
+# Remove default nginx files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy your LOCALLY built files straight into the Nginx directory
-COPY ./dist/myapp/browser /usr/share/nginx/html
-
+# Copy Angular build files
+COPY --from=build /app/dist/myapp/browser /usr/share/nginx/html
+# Expose port
 EXPOSE 80
+
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
