@@ -1,7 +1,7 @@
 # =========================
 # Stage 1 - Build Angular
 # =========================
-FROM node:24-alpine AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -12,16 +12,16 @@ ENV NODE_OPTIONS=--max-old-space-size=4096
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --include=dev
 
 # Copy all project files
 COPY . .
 
 # Build Angular app
-RUN npm run build
+RUN ./node_modules/.bin/ng build --configuration=production
 
 # Debug dist folder
-RUN ls -R /app/dist
+RUN ls -la /app/dist/myapp/browser || echo 'browser folder not found'
 
 # =========================
 # Stage 2 - Nginx Server
@@ -35,7 +35,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy Angular build files
-COPY --from=build /app/dist/myapp /usr/share/nginx/html
+COPY --from=build /app/dist/myapp/browser /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
