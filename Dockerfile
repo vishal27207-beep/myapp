@@ -1,7 +1,7 @@
 # =========================
 # Stage 1 - Build Angular
 # =========================
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -18,7 +18,10 @@ RUN npm install
 COPY . .
 
 # Build Angular app
-RUN npm run build --configuration=production
+RUN npm run build
+
+# Debug dist folder
+RUN ls -R /app/dist
 
 # =========================
 # Stage 2 - Nginx Server
@@ -32,7 +35,8 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy Angular build files
-COPY --from=build /app/dist/myapp/browser /usr/share/nginx/html
+COPY --from=build /app/dist/myapp /usr/share/nginx/html
+
 # Expose port
 EXPOSE 80
 
